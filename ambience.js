@@ -15,9 +15,24 @@ function ping(a,out,f,t,dur,vol,type){var o=a.createOscillator(),g=a.createGain(
 function burst(a,out,t,dur,vol,f,q){var s=a.createBufferSource();s.buffer=noiseBuf(a,dur+0.05,'white');var b=filt(a,'bandpass',f,q||1),g=a.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);s.connect(b);b.connect(g);g.connect(out);s.start(t);}
 var SC={
  casino:function(a,o,S){
-  var mb=filt(a,'bandpass',500,0.7),mg=gain(a,0.5);noise(a,'pink',mb);mb.connect(mg);mg.connect(o);lfo(a,0.13,0.12,mg.gain);
-  var mb2=filt(a,'bandpass',1400,2),mg2=gain(a,0.08);noise(a,'pink',mb2);mb2.connect(mg2);mg2.connect(o);lfo(a,0.31,0.05,mg2.gain);
-  var hum=a.createOscillator(),hg=gain(a,0.03);hum.frequency.value=60;hum.connect(hg);hg.connect(o);hum.start();
+  var room=filt(a,'lowpass',2500),rg0=gain(a,0.012);noise(a,'pink',room);room.connect(rg0);rg0.connect(o);
+  var crowd=gain(a,0.9),cl=filt(a,'lowpass',2600),cv=verb(a,1.6,3),cvg=gain(a,0.35);crowd.connect(cl);cl.connect(o);crowd.connect(cv);cv.connect(cvg);cvg.connect(o);
+  var V=[[800,1150],[400,1600],[350,2000],[600,1000],[450,800],[300,2300],[700,1250]];
+  function voice(){var t0=a.currentTime+0.05+Math.random()*0.5,male=Math.random()<0.55,base=male?(95+Math.random()*40):(180+Math.random()*60),len=1.2+Math.random()*2.8;
+   var src=a.createOscillator();src.type='sawtooth';src.frequency.setValueAtTime(base,t0);
+   var pan=a.createStereoPanner?a.createStereoPanner():gain(a,1);if(pan.pan)pan.pan.value=Math.random()*1.8-0.9;
+   var amp=a.createGain();amp.gain.setValueAtTime(0,t0);
+   var f1=filt(a,'bandpass',500,6),f2=filt(a,'bandpass',1500,9),g1=gain(a,1),g2=gain(a,0.5);src.connect(f1);src.connect(f2);f1.connect(g1);f2.connect(g2);g1.connect(amp);g2.connect(amp);amp.connect(pan);pan.connect(crowd);
+   var vol=0.05+Math.random()*0.05,tt=t0;
+   while(tt<t0+len){var syl=0.12+Math.random()*0.16,v=V[Math.floor(Math.random()*V.length)];
+    f1.frequency.setTargetAtTime(v[0]*(male?1:1.15),tt,0.025);f2.frequency.setTargetAtTime(v[1]*(male?1:1.15),tt,0.025);
+    src.frequency.setTargetAtTime(base*(0.85+Math.random()*0.35),tt,0.05);
+    amp.gain.setTargetAtTime(vol*(0.6+Math.random()*0.4),tt,0.02);amp.gain.setTargetAtTime(vol*0.08,tt+syl*0.7,0.03);
+    tt+=syl+(Math.random()<0.15?0.25:0);}
+   if(Math.random()<0.12){src.frequency.setTargetAtTime(base*1.6,tt-0.4,0.08);}
+   amp.gain.setTargetAtTime(0,tt,0.05);src.start(t0);src.stop(tt+0.4);}
+  for(var i=0;i<6;i++)voice();every(180,520,voice,S);
+  every(9000,20000,function(){var t=a.currentTime+0.05;for(var i=0;i<5;i++){var b0=a.createOscillator(),bg=a.createGain(),bf=filt(a,'bandpass',900+Math.random()*600,3);b0.type='sawtooth';b0.frequency.setValueAtTime(140+Math.random()*120,t);b0.frequency.linearRampToValueAtTime(220+Math.random()*160,t+0.4);bg.gain.setValueAtTime(0,t);bg.gain.linearRampToValueAtTime(0.03,t+0.08);bg.gain.exponentialRampToValueAtTime(0.001,t+0.9);b0.connect(bf);bf.connect(bg);bg.connect(crowd);b0.start(t+i*0.05);b0.stop(t+1);}},S);
   var rv=verb(a,2.2,3),rg=gain(a,0.5);rv.connect(rg);rg.connect(o);
   var notes=[1046.5,1174.7,1318.5,1568,1760,2093];
   every(700,2600,function(){var t=a.currentTime+0.02,pan=a.createStereoPanner?a.createStereoPanner():gain(a,1);if(pan.pan)pan.pan.value=Math.random()*1.6-0.8;pan.connect(o);pan.connect(rv);
@@ -28,11 +43,11 @@ var SC={
   var rv=verb(a,3,2.5),rg=gain(a,0.6);rv.connect(rg);rg.connect(o);
   var mb=filt(a,'bandpass',450,0.8),mg=gain(a,0.18);noise(a,'pink',mb);mb.connect(mg);mg.connect(o);lfo(a,0.09,0.05,mg.gain);
   var chords=[[146.8,174.6,220,261.6,329.6],[98,174.6,246.9,329.6,349.2],[130.8,164.8,246.9,293.7,392],[110,138.6,196,233.1,277.2]],k=0;
-  function chord(){var t=a.currentTime+0.05,c=chords[k++%chords.length];c.forEach(function(f,i){var os=a.createOscillator(),g=a.createGain(),tr=a.createGain();os.type='sine';os.frequency.value=f;g.gain.setValueAtTime(0,t+i*0.04);g.gain.linearRampToValueAtTime(0.05,t+i*0.04+0.03);g.gain.exponentialRampToValueAtTime(0.001,t+4.6);os.connect(g);g.connect(tr);tr.connect(o);tr.connect(rv);var l=a.createOscillator(),lg=gain(a,0.25);l.frequency.value=4.5;l.connect(lg);lg.connect(tr.gain);l.start(t);l.stop(t+4.8);os.start(t);os.stop(t+4.8);
-   var h=a.createOscillator(),hg=a.createGain();h.frequency.value=f*2;hg.gain.setValueAtTime(0,t);hg.gain.linearRampToValueAtTime(0.012,t+0.02);hg.gain.exponentialRampToValueAtTime(0.0005,t+1.5);h.connect(hg);hg.connect(o);h.start(t);h.stop(t+1.6);});}
+  function chord(){var t=a.currentTime+0.05,c=chords[k++%chords.length];c.forEach(function(f,i){var os=a.createOscillator(),g=a.createGain(),tr=a.createGain();os.type='sine';os.frequency.value=f;g.gain.setValueAtTime(0,t+i*0.04);g.gain.linearRampToValueAtTime(0.024,t+i*0.04+0.03);g.gain.exponentialRampToValueAtTime(0.001,t+4.6);os.connect(g);g.connect(tr);tr.connect(o);tr.connect(rv);var l=a.createOscillator(),lg=gain(a,0.25);l.frequency.value=4.5;l.connect(lg);lg.connect(tr.gain);l.start(t);l.stop(t+4.8);os.start(t);os.stop(t+4.8);
+   var h=a.createOscillator(),hg=a.createGain();h.frequency.value=f*2;hg.gain.setValueAtTime(0,t);hg.gain.linearRampToValueAtTime(0.006,t+0.02);hg.gain.exponentialRampToValueAtTime(0.0005,t+1.5);h.connect(hg);hg.connect(o);h.start(t);h.stop(t+1.6);});}
   chord();every(4800,4800,chord,S);
   var beat=0;every(400,400,function(){var t=a.currentTime+0.02;burst(a,o,t,beat%2?0.18:0.09,beat%2?0.025:0.012,6000,0.6);beat++;},S);
-  var bass=[73.4,49,65.4,55],bk=0;every(1200,1200,function(){var t=a.currentTime+0.02;ping(a,o,bass[Math.floor(bk/4)%4]*(bk%4===2?1.5:1),t,1.0,0.07,'triangle');bk++;},S);
+  var bass=[73.4,49,65.4,55],bk=0;every(1200,1200,function(){var t=a.currentTime+0.02;var bf=bass[Math.floor(bk/4)%4]*(bk%4===2?1.5:1);ping(a,o,bf,t,1.1,0.16,'triangle');ping(a,o,bf*2,t,0.6,0.05,'sine');bk++;},S);
  },
  desert:function(a,o,S){
   var wl=filt(a,'lowpass',500,1),wg=gain(a,0.55);noise(a,'pink',wl);wl.connect(wg);wg.connect(o);lfo(a,0.05,300,wl.frequency);lfo(a,0.07,0.3,wg.gain);
@@ -52,7 +67,12 @@ var SC={
   var lp=filt(a,'lowpass',900,0.5),dg=gain(a,0.0);lp.connect(dg);dg.connect(o);dg.connect(rv);dg.gain.linearRampToValueAtTime(0.06,a.currentTime+4);
   var sets=[[73.4,110,146.8,174.6],[65.4,98,130.8,155.6],[58.3,87.3,116.5,146.8],[55,82.4,110,130.8]],k=0,oscs=[];
   [0,1,2,3].forEach(function(i){[1,2,3].forEach(function(h){var os=a.createOscillator(),g=gain(a,0.22/h);os.type=h===1?'triangle':'sine';os.frequency.value=sets[0][i]*h;os.detune.value=(Math.random()-0.5)*6;os.connect(g);g.connect(lp);os.start();oscs.push([os,i,h]);});});
-  every(9000,9000,function(){k++;var t=a.currentTime,s=sets[k%sets.length];oscs.forEach(function(x){x[0].frequency.setTargetAtTime(s[x[1]]*x[2],t,1.4);});},S);
+  var R=[73.4,65.4,58.3,55],PAT=[[0,1],[7,.6],[12,.7],[7,.5],[0,.8],[-1,.5]],step=0,bl=filt(a,'lowpass',420,1.5),bgn=gain(a,1);bl.connect(bgn);bgn.connect(o);bgn.connect(rv);
+  function bnote(f,t,v){var os=a.createOscillator(),sub=a.createOscillator(),g=a.createGain();os.type='triangle';os.frequency.value=f;sub.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.2*v,t+0.03);g.gain.exponentialRampToValueAtTime(0.06*v,t+0.5);g.gain.exponentialRampToValueAtTime(0.0005,t+1.45);os.connect(g);sub.connect(g);g.connect(bl);os.start(t);sub.start(t);os.stop(t+1.5);sub.stop(t+1.5);}
+  every(1500,1500,function(){var t=a.currentTime+0.03,ci=Math.floor(step/6)%4,pi=step%6;
+   if(pi===0&&step>0){var s=sets[ci];oscs.forEach(function(x){x[0].frequency.setTargetAtTime(s[x[1]]*x[2],t,1.4);});}
+   var p=PAT[pi],root=R[ci],f;if(p[0]===-1){var nx=R[(ci+1)%4];f=nx*Math.pow(2,1/12);}else f=root*Math.pow(2,p[0]/12);
+   bnote(f,t,p[1]);step++;},S);
   lfo(a,0.08,120,lp.frequency);
   every(150,900,function(){var t=a.currentTime+0.02;burst(a,o,t,0.015,0.02+Math.random()*0.03,2500+Math.random()*3000,2);},S);
  }
