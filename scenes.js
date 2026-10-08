@@ -36,6 +36,7 @@ var CSS=[
 ".vtm-phone .m{max-width:78%;padding:8px 12px;border-radius:18px;font-size:15px;line-height:1.35;background:#2b2b2e;color:#f2f2f4;align-self:flex-start;opacity:0;animation:vtm-pop .35s ease-out forwards;white-space:pre-wrap;word-wrap:break-word}",
 ".vtm-phone .m.me{background:#8e1b1b;align-self:flex-end}",
 ".vtm-phone .ts{text-align:center;font-size:11px;color:#8a8a8e;margin:4px 0}",
+".vtm-phone .en{display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;color:#8a8a8e;margin:2px 0 0;letter-spacing:.02em}",
 ".vtm-phone .m.old{opacity:1;animation:none}",
 ".vtm-phone .dv{align-self:flex-end;font-size:11px;color:#8a8a8e;margin-top:-2px}",
 ".vtm-phone .rb{display:flex;gap:8px;align-items:flex-end;margin-top:12px;padding:0 2px}",
@@ -121,7 +122,7 @@ window.VTMEntrance=function(people,mount){
 
 function textThread(d){
  var name=d.contact||'Unknown';var ini=(d.initial||name.charAt(0)).toUpperCase();
- var html='<div class="vtm-phone"><div class="hd"><div class="av">'+esc(ini)+'</div><div class="cn">'+esc(name)+'</div></div><div class="ms">'+(d.time?'<div class="ts">'+esc(d.time)+'</div>':'');
+ var html='<div class="vtm-phone"><div class="hd"><div class="av">'+esc(ini)+'</div><div class="cn">'+esc(name)+'</div></div><div class="ms">'+(d.encrypted===false?'':'<div class="en"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Encrypted</div>')+(d.time?'<div class="ts">'+esc(d.time)+'</div>':'');
  var ms=d.messages||[];var anyNew=ms.some(function(m){return m.new;});var k=0;
  ms.forEach(function(m){var anim=!anyNew||m.new;html+='<div class="m'+(m.from==='me'?' me':'')+(anim?'':' old')+'"'+(anim?' style="animation-delay:'+(0.2+(k++)*0.7).toFixed(1)+'s"':'')+'>'+esc(m.text)+'</div>';});
  html+='</div>';
