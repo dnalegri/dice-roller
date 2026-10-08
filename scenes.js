@@ -2,6 +2,7 @@
    VTMScene(scene, mount)      scene title card, with the status strip inside when status.js is loaded
    VTMEntrance(people, mount)  character entrance name plates
    VTMDoc(doc, mount)          in-world documents: text, letter, memo, dossier, news, summons
+   VTMDaysleep(day, mount)     end-of-session dream cards for spending experience
    Every function renders into `mount`, or the element with id "vtm". All text is escaped. */
 (function(){
 var BASE=((document.currentScript&&document.currentScript.src)||'').replace(/scenes\.js.*$/,'');
@@ -26,6 +27,35 @@ var CSS=[
 ".vtm-sc .st{margin-top:1.25rem;opacity:0;animation:vtm-up .9s ease-out 2.8s forwards;text-align:left}",
 ".vtm-sc .am{margin:1rem auto 0;display:inline-flex;align-items:center;gap:7px;background:none;border:none;font:12px/1.4 var(--font-sans,sans-serif);letter-spacing:.06em;color:var(--text-secondary);cursor:pointer;height:auto;padding:4px 8px;opacity:0;animation:vtm-up .9s ease-out 2.4s forwards}",
 ".vtm-sc .am.on{color:var(--vtm-brass)}.vtm-sc.amb{cursor:pointer}",
+".vtm-ds{position:relative;overflow:hidden;border-radius:12px;background:var(--surface-2);border:0.5px solid var(--border);padding:1.75rem 1.25rem 1.25rem}",
+".vtm-ds .sky{position:relative;height:54px;margin:0 auto 6px;width:min(260px,70%);overflow:hidden}",
+".vtm-ds .sun{position:absolute;left:50%;bottom:-40px;width:64px;height:64px;margin-left:-32px;border-radius:50%;border:1.5px solid var(--vtm-brass);animation:vtm-sun 3s cubic-bezier(.3,.6,.3,1) .3s forwards}",
+".vtm-ds .hz{position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--vtm-blood)}",
+"@keyframes vtm-sun{to{bottom:-14px}}",
+".vtm-ds .eb{text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--text-secondary)}",
+".vtm-ds .ti{text-align:center;font-family:'Cinzel',serif;font-weight:600;font-size:clamp(22px,5.5vw,30px);letter-spacing:.12em;margin:.2rem 0 .5rem;color:var(--text-primary)}",
+".vtm-ds .ln{text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;line-height:1.5;color:var(--text-secondary);max-width:30em;margin:0 auto 1rem}",
+".vtm-ds .xp{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:center;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);padding:10px 4px;margin-bottom:1rem}",
+".vtm-ds .xp .n{font-family:'Cinzel',serif;font-weight:600;font-size:20px;color:var(--vtm-brass)}",
+".vtm-ds .xp .l{font-size:13px;color:var(--text-secondary)}",
+".vtm-ds .why{width:100%;text-align:center;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text-secondary)}",
+".vtm-ds .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}",
+".vtm-ds .dr{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:0.5px solid var(--border);border-left:3px solid var(--vtm-brass);background:var(--surface-1);min-width:0}",
+".vtm-ds .dr:hover{border-color:var(--border-strong);border-left-color:var(--vtm-brass)}",
+".vtm-ds .dr:focus-visible{outline:2px solid var(--vtm-brass);outline-offset:2px}",
+".vtm-ds .dr.sel{border-left-color:var(--vtm-blood);box-shadow:0 0 0 1.5px var(--vtm-blood)}",
+".vtm-ds .dr.far{border-left-color:var(--text-muted)}",
+".vtm-ds .dr .dt{font-family:'Cinzel',serif;font-weight:600;font-size:15px;letter-spacing:.04em;color:var(--text-primary);line-height:1.3}",
+".vtm-ds .dr .dx{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;line-height:1.45;color:var(--text-secondary)}",
+".vtm-ds .dr .rw{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:auto;padding-top:4px}",
+".vtm-ds .chip{font-size:12px;padding:3px 9px;border-radius:var(--radius);background:var(--surface-2);color:var(--text-primary)}",
+".vtm-ds .chip.c{color:var(--vtm-brass)}",
+".vtm-ds .bar{height:3px;background:var(--border);width:100%;margin-top:2px}.vtm-ds .bar i{display:block;height:100%;background:var(--vtm-brass)}",
+".vtm-ds .nt{font-size:12px;color:var(--text-muted)}",
+".vtm-ds .alt{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}",
+".vtm-ds .alt .dr{flex:1 1 200px;border-left-color:var(--border-strong)}",
+".vtm-ds .go{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:1rem}",
+".vtm-ds .er{font-size:13px;color:var(--text-danger)}",
 ".vtm-ent{display:flex;align-items:center;gap:14px;background:var(--surface-2);border:0.5px solid var(--border);border-left:3px solid var(--vtm-brass);border-radius:0;padding:12px 16px;margin:0 0 12px;opacity:0;transform:translateX(-24px);animation:vtm-slide .8s cubic-bezier(.2,.7,.2,1) forwards}",
 ".vtm-ent.threat{border-left-color:var(--vtm-blood)}.vtm-ent.unknown{border-left-color:var(--text-muted)}",
 ".vtm-ent .se{flex:none;width:52px;height:52px;border-radius:50%;border:1.5px solid var(--vtm-brass);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:600;font-size:18px;color:var(--vtm-brass)}",
@@ -165,6 +195,28 @@ function news(d){
 function summons(d){
  return '<div class="vtm-paper"><div class="vtm-sum"><div class="hd">'+esc(d.heading||'By order of the Prince')+'</div><div class="bd">'+paras(d.body)+'</div>'+(d.sign?'<div class="sg">'+esc(d.sign)+'</div>':'')+'</div></div>';
 }
+window.VTMDaysleep=function(d,mount){
+ setup();mount=mountOf(mount);d=d||{};var bank=+d.bank||0,dreams=d.dreams||[],sel=-1,sent=false;
+ var eb=[d.session,'Daysleep'].filter(Boolean).join(' · ');
+ var html=sr('Daysleep: choose a dream to spend experience')+'<div class="vtm-wrap"><div class="vtm-ds"><div class="sky" aria-hidden="true"><div class="sun"></div><div class="hz"></div></div><div class="eb">'+esc(eb)+'</div><div class="ti">'+esc(d.title||'The sun rises')+'</div>'+(d.line?'<p class="ln">'+esc(d.line)+'</p>':'');
+ html+='<div class="xp">'+(d.earned!=null?'<span><span class="n">+'+esc(d.earned)+'</span> <span class="l">XP tonight</span></span>':'')+'<span><span class="n">'+esc(bank)+'</span> <span class="l">XP to spend</span></span>'+((d.reasons||[]).length?'<div class="why">'+d.reasons.map(esc).join(' · ')+'</div>':'')+'</div>';
+ html+='<div class="grid">'+dreams.map(function(x,i){var c=+x.cost||0,far=c>bank,pct=c?Math.min(100,Math.round(bank/c*100)):100;
+  return '<button type="button" class="dr'+(far?' far':'')+'" data-i="'+i+'" aria-pressed="false"><span class="dt">'+esc(x.title)+'</span>'+(x.text?'<span class="dx">'+esc(x.text)+'</span>':'')+'<span class="rw"><span class="chip">'+esc(x.reward)+'</span><span class="chip c">'+c+' XP</span></span>'+(far?'<span class="bar"><i style="width:'+pct+'%"></i></span><span class="nt">'+bank+' of '+c+' XP. Choosing it saves toward it.</span>':'')+'</button>';}).join('')+'</div>';
+ html+='<div class="alt"><button type="button" class="dr" data-i="bank"><span class="dt">Dreamless sleep</span><span class="dx">Bank the experience for another day.</span></button><button type="button" class="dr" data-i="other"><span class="dt">Something else</span><span class="dx">Spend it another way. The Storyteller lists what it can buy.</span></button></div>';
+ html+='<div class="go"><button type="button" class="send">Choose this dream ↗</button><span class="er" role="status"></span></div></div></div>';
+ mount.innerHTML=html;
+ var cards=[].slice.call(mount.querySelectorAll('.dr')),er=mount.querySelector('.er'),btn=mount.querySelector('.send');
+ cards.forEach(function(b){b.addEventListener('click',function(){if(sent)return;sel=b.getAttribute('data-i');cards.forEach(function(c){c.classList.toggle('sel',c===b);c.setAttribute('aria-pressed',String(c===b));});er.textContent='';});});
+ btn.addEventListener('click',function(){
+  if(sent){er.textContent='Already sent to the Storyteller.';return;}
+  if(sel===-1){er.textContent='Pick a dream first.';return;}
+  var msg;if(sel==='bank')msg='[Daysleep] Anika sleeps without dreams. Bank the experience ('+bank+' XP).';
+  else if(sel==='other')msg='[Daysleep] I want to spend the experience another way. I have '+bank+' XP.';
+  else{var x=dreams[+sel],c=+x.cost||0;msg=c>bank?'[Daysleep] Anika dreams of '+x.title+'. Save toward '+x.reward+' ('+c+' XP) and bank the experience ('+bank+' XP).':'[Daysleep] Anika dreams of '+x.title+'. Spend '+c+' XP on '+x.reward+'.';}
+  sent=true;btn.textContent='Sent to the Storyteller';cards.forEach(function(c){if(!c.classList.contains('sel'))c.style.opacity='.45';c.style.cursor='default';});
+  if(typeof sendPrompt==='function')sendPrompt(msg);});
+};
+
 window.VTMDoc=function(d,mount){
  setup();mount=mountOf(mount);d=d||{};
  var f={text:textThread,letter:letter,note:letter,memo:memo,dossier:dossier,news:news,summons:summons}[d.type]||letter;
