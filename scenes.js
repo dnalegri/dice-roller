@@ -108,7 +108,7 @@ window.VTMScene=function(sc,mount){
  var eb=[sc.session,sc.scene].filter(Boolean).join(' · ');
  var wh=[sc.place,sc.time].filter(Boolean).join(' · ');
  mount.innerHTML=sr('Scene: '+(sc.title||''))+'<div class="vtm-wrap"><div class="vtm-sc">'+(eb?'<div class="eb">'+esc(eb)+'</div>':'')+'<div class="ti">'+esc(sc.title)+'</div>'+(wh?'<div class="wh">'+esc(wh)+'</div>':'')+'<div class="ru"></div>'+(sc.mood?'<p class="mo">'+esc(sc.mood)+'</p>':'')+'<div class="st"><div class="vtm-st"></div></div></div></div>';
- if(sc.status&&window.VTMStatus){window.VTMStatus(sc.status,mount.querySelector('.vtm-st'));}
+ if(sc.status&&window.VTMStatus){var st={};for(var k in sc.status)st[k]=sc.status[k];if(!st.change)st.change={trait:'',note:''};try{window.VTMStatus(st,mount.querySelector('.vtm-st'));}catch(e){mount.querySelector('.st').style.display='none';}}
 };
 
 window.VTMEntrance=function(people,mount){
