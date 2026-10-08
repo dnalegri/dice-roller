@@ -16,7 +16,7 @@ var CSS=[
 ".vtm-wrap{padding:1rem 0}",
 ".vtm-sc{position:relative;overflow:hidden;border-radius:12px;background:var(--surface-2);border:0.5px solid var(--border);padding:2rem 1.5rem 1.25rem;text-align:center}",
 ".vtm-sc .eb{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--text-secondary);opacity:0;animation:vtm-up .9s ease-out .2s forwards}",
-".vtm-sc .ti{font-family:'Cinzel',serif;font-weight:600;font-size:clamp(24px,6vw,34px);letter-spacing:.14em;margin:.35rem 0 .2rem;color:var(--text-primary);opacity:0;animation:vtm-wide 1.6s cubic-bezier(.2,.7,.2,1) .5s forwards;line-height:1.2}",
+".vtm-sc .ti{font-family:'Cinzel',serif;font-weight:600;font-size:clamp(24px,6vw,34px);letter-spacing:.14em;margin:.35rem 0 .8rem;color:var(--text-primary);opacity:0;animation:vtm-wide 1.6s cubic-bezier(.2,.7,.2,1) .5s forwards;line-height:1.2}",
 ".vtm-sc .wh{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.12em;color:var(--vtm-brass);opacity:0;animation:vtm-up .9s ease-out 1.3s forwards}",
 ".vtm-sc .ru{height:1px;background:var(--vtm-blood);width:0;margin:1rem auto;animation:vtm-line 1.2s ease-out 1.5s forwards}",
 ".vtm-sc .mo{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;line-height:1.5;color:var(--text-secondary);max-width:30em;margin:0 auto;opacity:0;animation:vtm-up 1.2s ease-out 2.1s forwards}",
