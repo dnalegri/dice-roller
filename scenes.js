@@ -4,6 +4,9 @@
    VTMDoc(doc, mount)          in-world documents: text, letter, memo, dossier, news, summons
    Every function renders into `mount`, or the element with id "vtm". All text is escaped. */
 (function(){
+var BASE=((document.currentScript&&document.currentScript.src)||'').replace(/scenes\.js.*$/,'');
+var AMB={casino:'Casino floor',lounge:'The lounge',desert:'Desert night',sewers:'The sewers',elysium:'Elysium'};
+function loadAmb(cb){if(window.VTMAmbience){cb&&cb();return;}if(!BASE)return;var s=document.createElement('script');s.src=BASE+'ambience.js';s.onload=function(){cb&&cb();};document.head.appendChild(s);}
 var FONTS="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=IM+Fell+English:ital@0;1&family=Special+Elite&family=Playfair+Display:wght@700;900&family=Mrs+Saint+Delafield&family=La+Belle+Aurore&family=Petit+Formal+Script&family=Homemade+Apple&family=Poiret+One&display=swap";
 var CSS=[
 ":root{--vtm-blood:#A32D2D;--vtm-brass:#854F0B}",
@@ -21,6 +24,8 @@ var CSS=[
 ".vtm-sc .ru{height:1px;background:var(--vtm-blood);width:0;margin:1rem auto;animation:vtm-line 1.2s ease-out 1.5s forwards}",
 ".vtm-sc .mo{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;line-height:1.5;color:var(--text-secondary);max-width:30em;margin:0 auto;opacity:0;animation:vtm-up 1.2s ease-out 2.1s forwards}",
 ".vtm-sc .st{margin-top:1.25rem;opacity:0;animation:vtm-up .9s ease-out 2.8s forwards;text-align:left}",
+".vtm-sc .am{margin:1rem auto 0;display:inline-flex;align-items:center;gap:7px;background:none;border:none;font:12px/1.4 var(--font-sans,sans-serif);letter-spacing:.06em;color:var(--text-secondary);cursor:pointer;height:auto;padding:4px 8px;opacity:0;animation:vtm-up .9s ease-out 2.4s forwards}",
+".vtm-sc .am.on{color:var(--vtm-brass)}.vtm-sc.amb{cursor:pointer}",
 ".vtm-ent{display:flex;align-items:center;gap:14px;background:var(--surface-2);border:0.5px solid var(--border);border-left:3px solid var(--vtm-brass);border-radius:0;padding:12px 16px;margin:0 0 12px;opacity:0;transform:translateX(-24px);animation:vtm-slide .8s cubic-bezier(.2,.7,.2,1) forwards}",
 ".vtm-ent.threat{border-left-color:var(--vtm-blood)}.vtm-ent.unknown{border-left-color:var(--text-muted)}",
 ".vtm-ent .se{flex:none;width:52px;height:52px;border-radius:50%;border:1.5px solid var(--vtm-brass);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:600;font-size:18px;color:var(--vtm-brass)}",
@@ -107,8 +112,16 @@ window.VTMScene=function(sc,mount){
  setup();mount=mountOf(mount);sc=sc||{};
  var eb=[sc.session,sc.scene].filter(Boolean).join(' · ');
  var wh=[sc.place,sc.time].filter(Boolean).join(' · ');
- mount.innerHTML=sr('Scene: '+(sc.title||''))+'<div class="vtm-wrap"><div class="vtm-sc">'+(eb?'<div class="eb">'+esc(eb)+'</div>':'')+'<div class="ti">'+esc(sc.title)+'</div>'+(wh?'<div class="wh">'+esc(wh)+'</div>':'')+'<div class="ru"></div>'+(sc.mood?'<p class="mo">'+esc(sc.mood)+'</p>':'')+'<div class="st"><div class="vtm-st"></div></div></div></div>';
+ mount.innerHTML=sr('Scene: '+(sc.title||''))+'<div class="vtm-wrap"><div class="vtm-sc">'+(eb?'<div class="eb">'+esc(eb)+'</div>':'')+'<div class="ti">'+esc(sc.title)+'</div>'+(wh?'<div class="wh">'+esc(wh)+'</div>':'')+'<div class="ru"></div>'+(sc.mood?'<p class="mo">'+esc(sc.mood)+'</p>':'')+(AMB[sc.ambience]?'<button type="button" class="am"></button>':'')+'<div class="st"><div class="vtm-st"></div></div></div></div>';
  if(sc.status&&window.VTMStatus){var st={};for(var k in sc.status)st[k]=sc.status[k];if(!st.change)st.change={trait:'',note:''};try{window.VTMStatus(st,mount.querySelector('.vtm-st'));}catch(e){mount.querySelector('.st').style.display='none';}}
+ if(AMB[sc.ambience]){var card=mount.querySelector('.vtm-sc'),btn=mount.querySelector('.am'),nm=AMB[sc.ambience],on=false,started=false;card.classList.add('amb');
+  var SPK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/>',WAV='<path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',MUT='<path d="m16 9 5 6"/><path d="m21 9-5 6"/></svg>';
+  function draw(){btn.classList.toggle('on',on);btn.innerHTML=(on?SPK+WAV:SPK+MUT)+'<span>'+(on?nm+' \u00b7 tap to mute':started?nm+' \u00b7 muted, tap to resume':'Tap the card for ambience \u00b7 '+nm)+'</span>';btn.setAttribute('aria-label',on?'Mute ambience':'Play ambience');}
+  function play(){loadAmb(function(){if(window.VTMAmbience&&VTMAmbience.play(sc.ambience)){on=true;started=true;draw();}});}
+  function mute(){if(window.VTMAmbience)VTMAmbience.stop();on=false;draw();}
+  card.addEventListener('click',function(e){if(btn.contains(e.target)){on?mute():play();return;}if(!started)play();});
+  setInterval(function(){if(on&&window.VTMAmbience&&VTMAmbience.playing()!==sc.ambience){on=false;draw();}},1500);
+  loadAmb();draw();}
 };
 
 window.VTMEntrance=function(people,mount){
