@@ -2,6 +2,7 @@
    VTMScene(scene, mount)      scene title card, with the status strip inside when status.js is loaded
    VTMEntrance(people, mount)  character entrance name plates
    VTMDoc(doc, mount)          in-world documents: text, letter, memo, dossier, news, summons
+   VTMMail(mail, mount)        desktop email client: inbox, reading pane, reply and compose
    VTMDaysleep(day, mount)     end-of-session dream cards for spending experience
    Every function renders into `mount`, or the element with id "vtm". All text is escaped. */
 (function(){
@@ -100,6 +101,43 @@ var CSS=[
 "@keyframes vtm-type{to{opacity:1}}",
 ".vtm-log .cur{display:inline-block;width:8px;height:14px;background:#7fe39a;vertical-align:-2px;animation:vtm-blink 1s steps(1) infinite;opacity:0}",
 ".vtm-log .ft{padding:6px 14px 10px;font-size:11px;color:#4a8a5d}",
+".vtm-mail{max-width:680px;margin:0 auto;background:#1c1c1e;border-radius:14px;padding:10px 10px 14px;border:1px solid #2c2c2e}",
+".vtm-mail .win{background:#fbfbfc;color:#1d1d1f;border-radius:8px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;min-height:340px;display:flex;flex-direction:column}",
+".vtm-mail .tb{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#ececee;border-bottom:1px solid #d9d9dd}",
+".vtm-mail .dots{display:flex;gap:6px}.vtm-mail .dots i{width:10px;height:10px;border-radius:50%;background:#ff5f57}.vtm-mail .dots i+i{background:#febc2e}.vtm-mail .dots i+i+i{background:#28c840}",
+".vtm-mail .tt{flex:1;text-align:center;font-size:12px;color:#6e6e73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
+".vtm-mail .nb{all:unset;cursor:pointer;font-size:12px;font-weight:600;color:#0a63d8;padding:3px 8px;border-radius:5px}.vtm-mail .nb:hover{background:#dfe8f6}",
+".vtm-mail .bd{display:grid;grid-template-columns:minmax(0,230px) minmax(0,1fr);flex:1;min-height:0}",
+".vtm-mail .ls{border-right:1px solid #e3e3e6;overflow-y:auto;max-height:440px}",
+".vtm-mail .fh{padding:10px 12px 6px;font-size:12px;font-weight:600;color:#6e6e73;display:flex;justify-content:space-between}",
+".vtm-mail .it{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;padding:9px 12px 10px 20px;border-bottom:1px solid #eeeef0;position:relative}",
+".vtm-mail .it:hover{background:#f1f1f4}.vtm-mail .it.on{background:#0a63d8;color:#fff}.vtm-mail .it:focus-visible{outline:2px solid #0a63d8;outline-offset:-2px}",
+".vtm-mail .it .u{position:absolute;left:7px;top:15px;width:7px;height:7px;border-radius:50%;background:#0a63d8}.vtm-mail .it.on .u{background:#fff}",
+".vtm-mail .it .r1{display:flex;justify-content:space-between;gap:6px}.vtm-mail .it .fr{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vtm-mail .it .tm{font-size:12px;color:#8e8e93;flex:none}.vtm-mail .it.on .tm{color:#dfe8f6}",
+".vtm-mail .it .sb{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vtm-mail .it.rd .fr,.vtm-mail .it.rd .sb{font-weight:400}",
+".vtm-mail .it .pv{font-size:12px;color:#8e8e93;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.vtm-mail .it.on .pv{color:#dfe8f6}",
+".vtm-mail .it.nw{animation:vtm-pop .4s ease-out both}",
+".vtm-mail .pn{padding:16px 18px;overflow-y:auto;max-height:440px;min-width:0}",
+".vtm-mail .em{color:#8e8e93;text-align:center;padding:60px 10px}",
+".vtm-mail .hs{font-size:18px;font-weight:600;margin:0 0 10px;line-height:1.3}",
+".vtm-mail .hr{display:flex;gap:10px;align-items:center;padding-bottom:10px;border-bottom:1px solid #e3e3e6;margin-bottom:12px}",
+".vtm-mail .av{flex:none;width:34px;height:34px;border-radius:50%;background:#8e8e93;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}",
+".vtm-mail .hm{min-width:0;flex:1}.vtm-mail .hm .a{font-weight:600}.vtm-mail .hm .b{font-size:12px;color:#6e6e73;overflow-wrap:anywhere}",
+".vtm-mail .tx{line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}",
+".vtm-mail .at{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.vtm-mail .at span{font-size:12px;border:1px solid #d9d9dd;border-radius:6px;padding:5px 9px;background:#f4f4f6}",
+".vtm-mail .ac{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}",
+".vtm-mail .bt{all:unset;cursor:pointer;font-size:13px;padding:6px 12px;border-radius:6px;border:1px solid #d1d1d6;background:#fff;color:#1d1d1f}.vtm-mail .bt:hover{background:#f1f1f4}.vtm-mail .bt.p{background:#0a63d8;border-color:#0a63d8;color:#fff}.vtm-mail .bt.p:hover{background:#0857c0}",
+".vtm-mail .bt:focus-visible,.vtm-mail .nb:focus-visible{outline:2px solid #0a63d8;outline-offset:2px}",
+".vtm-mail .fm{display:flex;flex-direction:column;gap:8px}.vtm-mail .fm label{display:flex;align-items:center;gap:8px;border-bottom:1px solid #e3e3e6;padding:4px 0;font-size:13px;color:#6e6e73}",
+".vtm-mail .fm input{flex:1;border:none;outline:none;background:transparent;font-size:14px;font-family:inherit;color:#1d1d1f;height:auto;padding:4px 0;min-width:0}",
+".vtm-mail .fm textarea{border:1px solid #e3e3e6;border-radius:6px;min-height:140px;resize:vertical;font-size:14px;line-height:1.5;font-family:inherit;color:#1d1d1f;background:#fff;padding:8px 10px;outline:none}",
+".vtm-mail .fm textarea:focus{border-color:#0a63d8}",
+".vtm-mail .er{font-size:12px;color:#d70015;min-height:16px}",
+".vtm-mail .ok{font-size:13px;color:#248a3d}",
+".vtm-mail .qt{margin-top:10px;padding-left:10px;border-left:2px solid #d1d1d6;color:#6e6e73;font-size:13px;white-space:pre-wrap;max-height:120px;overflow:hidden}",
+".vtm-mail .back{display:none}",
+"@media (max-width:560px){.vtm-mail .bd{grid-template-columns:minmax(0,1fr)}.vtm-mail .ls{border-right:none;max-height:none}.vtm-mail .pn{display:none;max-height:none}.vtm-mail.reading .ls{display:none}.vtm-mail.reading .pn{display:block}.vtm-mail .back{display:inline-block}}",
+".vtm-mail .base{height:8px;margin:8px auto 0;width:40%;background:#2c2c2e;border-radius:0 0 8px 8px}",
 ".vtm-ent{display:flex;align-items:center;gap:14px;background:var(--surface-2);border:0.5px solid var(--border);border-left:3px solid var(--vtm-brass);border-radius:0;padding:12px 16px;margin:0 0 12px;opacity:0;transform:translateX(-24px);animation:vtm-slide .8s cubic-bezier(.2,.7,.2,1) forwards}",
 ".vtm-ent.threat{border-left-color:var(--vtm-blood)}.vtm-ent.unknown{border-left-color:var(--text-muted)}",
 ".vtm-ent .se{flex:none;width:52px;height:52px;border-radius:50%;border:1.5px solid var(--vtm-brass);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:600;font-size:18px;color:var(--vtm-brass)}",
@@ -289,6 +327,33 @@ function sysLog(d){
  html+='<div class="ln" style="animation-delay:'+(0.3+n*0.45).toFixed(2)+'s"><span class="ts">&gt;</span><span class="cur" style="opacity:1"></span></div></div>'+(d.footer?'<div class="ft">'+esc(d.footer)+'</div>':'')+'</div>';
  return html;
 }
+window.VTMMail=function(m,mount){
+ setup();mount=mountOf(mount);m=m||{};var ems=(m.emails||[]).slice(),cur=-1,mode='',read={},closed=false,post=window.sendPrompt||function(){};
+ var who=m.owner||'Anika';
+ mount.innerHTML=sr('Email inbox for '+(m.account||who))+'<div class="vtm-wrap"><div class="vtm-mail"><div class="win"><div class="tb"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="tt">Inbox — '+esc(m.account||who)+'</span><button type="button" class="nb" data-a="new">New message</button></div><div class="bd"><div class="ls"></div><div class="pn"></div></div></div><div class="base" aria-hidden="true"></div></div></div>';
+ var root=mount.querySelector('.vtm-mail'),ls=root.querySelector('.ls'),pn=root.querySelector('.pn');
+ function ini(s){return String(s||'?').trim().charAt(0).toUpperCase()||'?';}
+ function list(){var un=ems.filter(function(e,i){return e.unread&&!read[i];}).length;
+  ls.innerHTML='<div class="fh"><span>'+esc(m.folder||'Inbox')+'</span><span>'+(un?un+' unread':'')+'</span></div>'+(ems.length?ems.map(function(e,i){var u=e.unread&&!read[i];return '<button type="button" class="it'+(u?'':' rd')+(i===cur?' on':'')+(e.new?' nw':'')+'" data-i="'+i+'">'+(u?'<span class="u" aria-label="Unread"></span>':'')+'<span class="r1"><span class="fr">'+esc(e.from)+'</span><span class="tm">'+esc(e.time||'')+'</span></span><span class="sb" style="display:block">'+esc(e.subject||'(no subject)')+'</span><span class="pv">'+esc(e.preview||String(e.body||'').slice(0,120))+'</span></button>';}).join(''):'<div class="em">No messages</div>');}
+ function empty(){pn.innerHTML='<div class="em">Select a message to read it.</div>';}
+ function open(i){cur=i;mode='read';read[i]=true;var e=ems[i];root.classList.add('reading');list();
+  pn.innerHTML='<button type="button" class="bt back" data-a="back">‹ Inbox</button><h3 class="hs">'+esc(e.subject||'(no subject)')+'</h3><div class="hr"><span class="av" aria-hidden="true">'+esc(ini(e.from))+'</span><span class="hm"><span class="a" style="display:block">'+esc(e.from)+'</span><span class="b" style="display:block">'+esc(e.fromAddr||'')+(e.to?' · to '+esc(e.to):'')+(e.time?' · '+esc(e.time):'')+'</span></span></div><div class="tx">'+esc(e.body||'')+'</div>'+((e.attachments||[]).length?'<div class="at">'+e.attachments.map(function(a){return '<span>📎 '+esc(a)+'</span>';}).join('')+'</div>':'')+(m.reply===false?'':'<div class="ac"><button type="button" class="bt" data-a="reply">Reply</button></div>');}
+ function compose(re){mode='compose';var e=re!=null?ems[re]:null;root.classList.add('reading');
+  pn.innerHTML='<button type="button" class="bt back" data-a="back">‹ Inbox</button><h3 class="hs">'+(e?'Reply':'New message')+'</h3><div class="fm"><label>To:<input type="text" class="f-to" value="'+esc(e?(e.fromAddr||e.from):'')+'" aria-label="To"></label><label>Subject:<input type="text" class="f-sb" value="'+esc(e?('Re: '+String(e.subject||'').replace(/^Re:\s*/i,'')):'')+'" aria-label="Subject"></label><textarea class="f-bd" aria-label="Message" placeholder="Write your email"></textarea><div class="er" role="status"></div><div class="ac" style="margin-top:0"><button type="button" class="bt p" data-a="send">Send</button><button type="button" class="bt" data-a="cancel">Cancel</button></div></div>'+(e?'<div class="qt">'+esc(e.body||'')+'</div>':'');
+  pn.querySelector('.f-bd').focus();pn.dataset.re=re!=null?re:'';}
+ function send(){var to=pn.querySelector('.f-to').value.trim(),sb=pn.querySelector('.f-sb').value.trim(),bd=pn.querySelector('.f-bd').value.trim(),er=pn.querySelector('.er');
+  if(!to){er.textContent='Add a recipient.';return;}if(!bd){er.textContent='Write a message first.';return;}
+  var re=pn.dataset.re!==''?ems[+pn.dataset.re]:null;
+  post((re?'[Email reply to '+re.from+'] ':'[Email to '+to+'] ')+'Subject: '+(sb||'(no subject)')+'\n\n'+bd);
+  pn.innerHTML='<div class="em"><div class="ok">Sent to '+esc(to)+'.</div><div style="margin-top:6px">Waiting for a reply…</div></div>';mode='sent';}
+ root.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b||closed)return;var a=b.getAttribute('data-a');
+  if(b.classList.contains('it')){open(+b.getAttribute('data-i'));return;}
+  if(a==='new')compose(null);else if(a==='reply')compose(cur);else if(a==='send')send();else if(a==='cancel'){cur>=0?open(cur):(root.classList.remove('reading'),empty());}else if(a==='back'){root.classList.remove('reading');cur=-1;list();empty();}else if(a==='close'){closed=true;b.textContent='Mail closed';var rd=Object.keys(read).map(function(k){return ems[k].subject||'(no subject)';});post('[Close mail] Anika closes the mail'+(rd.length?'. Read: '+rd.join('; ')+'.':' without reading anything.'));}});
+ root.addEventListener('input',function(){var er=pn.querySelector('.er');if(er)er.textContent='';});
+ var cl=document.createElement('div');cl.style.cssText='text-align:center;margin-top:8px';cl.innerHTML='<button type="button" class="nb" data-a="close" style="color:#8e8e93;text-decoration:underline;font-weight:400">Close mail</button>';root.appendChild(cl);
+ list();empty();
+};
+
 window.VTMDoc=function(d,mount){
  setup();mount=mountOf(mount);d=d||{};
  var f={log:sysLog,lock:lockScreen,voicemail:voicemail,text:textThread,letter:letter,note:letter,memo:memo,dossier:dossier,news:news,summons:summons}[d.type]||letter;
