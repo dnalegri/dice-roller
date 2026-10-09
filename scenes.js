@@ -86,6 +86,20 @@ var CSS=[
 ".vtm-vm .du{font-size:12px;color:#8a8a8e;font-variant-numeric:tabular-nums}",
 ".vtm-vm .lb{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8a8a8e;margin-bottom:4px}",
 ".vtm-vm .tx{font-size:15px;line-height:1.5;color:#e4e4e8;white-space:pre-wrap;overflow-wrap:anywhere}",
+".vtm-log{max-width:560px;margin:0 auto;background:#070a08;border:1px solid #1e2a22;border-radius:8px;overflow:hidden;font-family:var(--font-mono,ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace);color:#7fe39a;background-image:repeating-linear-gradient(180deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}",
+".vtm-log .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 12px;background:#0f1612;border-bottom:1px solid #1e2a22;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5fae76}",
+".vtm-log .rec{display:inline-flex;align-items:center;gap:6px;color:#ff5a5a}.vtm-log .rec i{width:7px;height:7px;border-radius:50%;background:#ff5a5a;animation:vtm-blink 1.2s steps(1) infinite}",
+"@keyframes vtm-blink{50%{opacity:0}}",
+".vtm-log .scr{padding:12px 14px 14px;font-size:13px;line-height:1.6;overflow-x:auto}",
+".vtm-log .ln{display:flex;gap:10px;white-space:pre-wrap;overflow-wrap:anywhere;opacity:0;animation:vtm-type .01s linear forwards}",
+".vtm-log .ln .ts{flex:none;color:#4a8a5d}",
+".vtm-log .ln .lv{flex:none;width:5.5em}",
+".vtm-log .ln.info .lv{color:#4a8a5d}.vtm-log .ln.warn .lv,.vtm-log .ln.warn .mg{color:#f2c14e}.vtm-log .ln.alert .lv,.vtm-log .ln.alert .mg{color:#ff6b6b}",
+".vtm-log .ln.alert{background:rgba(255,80,80,.08)}",
+".vtm-log .mg{min-width:0}",
+"@keyframes vtm-type{to{opacity:1}}",
+".vtm-log .cur{display:inline-block;width:8px;height:14px;background:#7fe39a;vertical-align:-2px;animation:vtm-blink 1s steps(1) infinite;opacity:0}",
+".vtm-log .ft{padding:6px 14px 10px;font-size:11px;color:#4a8a5d}",
 ".vtm-ent{display:flex;align-items:center;gap:14px;background:var(--surface-2);border:0.5px solid var(--border);border-left:3px solid var(--vtm-brass);border-radius:0;padding:12px 16px;margin:0 0 12px;opacity:0;transform:translateX(-24px);animation:vtm-slide .8s cubic-bezier(.2,.7,.2,1) forwards}",
 ".vtm-ent.threat{border-left-color:var(--vtm-blood)}.vtm-ent.unknown{border-left-color:var(--text-muted)}",
 ".vtm-ent .se{flex:none;width:52px;height:52px;border-radius:50%;border:1.5px solid var(--vtm-brass);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:600;font-size:18px;color:var(--vtm-brass)}",
@@ -267,9 +281,17 @@ function lockScreen(d){
 function voicemail(d){
  return '<div class="vtm-vm"><div class="hd"><span class="nm">'+esc(d.from||'Unknown')+'</span><span class="tm">'+esc(d.time||'')+'</span></div><div class="pl"><span class="pb" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M7 4v16l13-8z"/></svg></span><span class="tr"><i></i></span><span class="du">'+esc(d.duration||'')+'</span></div><div class="lb">Transcript</div><div class="tx">'+esc(d.transcript||d.body||'')+'</div></div>';
 }
+function sysLog(d){
+ var ls=d.lines||[],n=ls.length;
+ var html='<div class="vtm-log"><div class="bar"><span>'+esc(d.system||'Security Operations')+(d.source?' · '+esc(d.source):'')+'</span>'+(d.live===false?'':'<span class="rec"><i></i>Live</span>')+'</div><div class="scr">';
+ ls.forEach(function(l,i){var o=Array.isArray(l)?{time:l[0],text:l[1],level:l[2]}:l;var lv=/^(alert|warn|info)$/.test(o.level||'')?o.level:'info';
+  html+='<div class="ln '+lv+'" style="animation-delay:'+(0.3+i*0.45).toFixed(2)+'s">'+(o.time?'<span class="ts">'+esc(o.time)+'</span>':'')+'<span class="lv">['+lv.toUpperCase()+']</span><span class="mg">'+esc(o.text||'')+'</span></div>';});
+ html+='<div class="ln" style="animation-delay:'+(0.3+n*0.45).toFixed(2)+'s"><span class="ts">&gt;</span><span class="cur" style="opacity:1"></span></div></div>'+(d.footer?'<div class="ft">'+esc(d.footer)+'</div>':'')+'</div>';
+ return html;
+}
 window.VTMDoc=function(d,mount){
  setup();mount=mountOf(mount);d=d||{};
- var f={lock:lockScreen,voicemail:voicemail,text:textThread,letter:letter,note:letter,memo:memo,dossier:dossier,news:news,summons:summons}[d.type]||letter;
+ var f={log:sysLog,lock:lockScreen,voicemail:voicemail,text:textThread,letter:letter,note:letter,memo:memo,dossier:dossier,news:news,summons:summons}[d.type]||letter;
  if(d.type==='note'&&!d.hand)d.hand='rushed';
  mount.innerHTML=sr('Document: '+(d.type||'letter'))+'<div class="vtm-wrap">'+f(d)+'</div>';
  var ph=mount.querySelector('.vtm-phone');
