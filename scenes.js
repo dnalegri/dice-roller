@@ -166,6 +166,7 @@ var CSS=[
 ".vtm-phone .av{width:52px;height:52px;border-radius:50%;background:#5c5c62;color:#f2f2f4;display:flex;align-items:center;justify-content:center;margin:0 auto 4px;font-size:22px;font-weight:500;font-family:var(--font-sans)}",
 ".vtm-phone .cn{color:#f2f2f4;font-size:13px;font-family:var(--font-sans)}",
 ".vtm-phone .ms{padding:10px 4px 0;display:flex;flex-direction:column;gap:6px;font-family:var(--font-sans)}",
+".vtm-phone .ms{max-height:min(440px,62vh);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#3a3a3e transparent;padding-right:2px}",
 ".vtm-phone .m{max-width:78%;padding:8px 12px;border-radius:18px;font-size:15px;line-height:1.35;background:#2b2b2e;color:#f2f2f4;align-self:flex-start;opacity:0;animation:vtm-pop .35s ease-out forwards;white-space:pre-wrap;word-wrap:break-word}",
 ".vtm-phone .m.me{background:#8e1b1b;align-self:flex-end}",
 ".vtm-phone .ts{text-align:center;font-size:11px;color:#8a8a8e;margin:4px 0}",
@@ -376,12 +377,17 @@ window.VTMDoc=function(d,mount){
  if(d.type==='note'&&!d.hand)d.hand='rushed';
  mount.innerHTML=sr('Document: '+(d.type||'letter'))+'<div class="vtm-wrap">'+f(d)+'</div>';
  var ph=mount.querySelector('.vtm-phone');
+ if(ph){var ms0=ph.querySelector('.ms'),stick=true;
+  var bottom=function(){if(stick)ms0.scrollTop=ms0.scrollHeight;};
+  ms0.addEventListener('scroll',function(){stick=ms0.scrollHeight-ms0.scrollTop-ms0.clientHeight<40;});
+  ms0.addEventListener('animationstart',bottom);ms0.addEventListener('animationend',bottom);
+  bottom();requestAnimationFrame(bottom);setTimeout(bottom,60);}
  if(ph&&d.type==='text'&&d.reply!==false){
   var ta=ph.querySelector('textarea'),sd=ph.querySelector('.sd'),er=ph.querySelector('.er'),aw=ph.querySelector('.aw'),list=ph.querySelector('.ms'),who=d.contact||'Unknown',done=false;
   var post=window.sendPrompt||function(){};
   ta.addEventListener('input',function(){er.textContent='';ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,120)+'px';});
   function send(){if(done)return;var t=ta.value.trim();if(!t){er.textContent='Type a message first.';return;}
-   done=true;var b=document.createElement('div');b.className='m me';b.textContent=t;list.appendChild(b);var dv=document.createElement('div');dv.className='dv';dv.textContent='Delivered';list.appendChild(dv);
+   done=true;var b=document.createElement('div');b.className='m me';b.textContent=t;list.appendChild(b);var dv=document.createElement('div');dv.className='dv';dv.textContent='Delivered';list.appendChild(dv);list.scrollTop=list.scrollHeight;
    ta.value='';ta.disabled=true;sd.disabled=true;aw.style.display='none';ta.placeholder='Waiting for a reply\u2026';
    post('[Text to '+who+'] '+t);}
   sd.onclick=send;ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
