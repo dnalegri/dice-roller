@@ -56,6 +56,36 @@ var CSS=[
 ".vtm-ds .alt .dr{flex:1 1 200px;border-left-color:var(--border-strong)}",
 ".vtm-ds .go{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:1rem}",
 ".vtm-ds .er{font-size:13px;color:var(--text-danger)}",
+".vtm-lock{max-width:340px;margin:0 auto;background:#0b0b0d;border-radius:28px;padding:18px 12px 16px;border:1px solid #2a2a2c;position:relative;overflow:hidden;font-family:var(--font-sans,sans-serif);color:#f2f2f4}",
+".vtm-lock .wp{position:absolute;left:50%;top:38px;width:220px;height:260px;margin-left:-110px;color:#8e1b1b;opacity:.16;pointer-events:none}",
+".vtm-lock .top{position:relative;display:flex;justify-content:center;color:#a8a8ad;font-size:12px;gap:6px;align-items:center}",
+".vtm-lock .clk{position:relative;text-align:center;font-size:64px;font-weight:300;letter-spacing:-1px;line-height:1.05;margin-top:10px;font-variant-numeric:tabular-nums}",
+".vtm-lock .dt{position:relative;text-align:center;font-size:15px;color:#c9c9ce;margin-bottom:18px}",
+".vtm-lock .ns{position:relative;display:flex;flex-direction:column;gap:8px}",
+".vtm-lock .nf{all:unset;box-sizing:border-box;display:flex;gap:10px;align-items:flex-start;width:100%;background:#1f1f22;border-radius:16px;padding:10px 12px;cursor:pointer;opacity:0;animation:vtm-pop .35s ease-out forwards}",
+".vtm-lock .nf:hover{background:#28282c}.vtm-lock .nf:focus-visible{outline:2px solid #8e1b1b;outline-offset:2px}",
+".vtm-lock .nf.done{opacity:.45!important;cursor:default}",
+".vtm-lock .ic{flex:none;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff}",
+".vtm-lock .ic.text{background:#2f8f4e}.vtm-lock .ic.missed,.vtm-lock .ic.voicemail{background:#3a3a3e}.vtm-lock .ic.alert{background:#8e1b1b}",
+".vtm-lock .bd{flex:1;min-width:0}",
+".vtm-lock .hd{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#a8a8ad}",
+".vtm-lock .ap{text-transform:uppercase;letter-spacing:.06em}",
+".vtm-lock .ti{font-size:14px;font-weight:600;color:#f2f2f4;margin-top:1px}",
+".vtm-lock .tx{font-size:14px;color:#d8d8dc;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}",
+".vtm-lock .ct{font-size:12px;color:#a8a8ad;margin-top:2px}",
+".vtm-lock .em{position:relative;text-align:center;color:#8a8a8e;font-size:14px;padding:30px 0}",
+".vtm-lock .ft{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:16px}",
+".vtm-lock .bar{width:120px;height:4px;border-radius:2px;background:#f2f2f4;opacity:.8}",
+".vtm-lock .aw{background:none;border:none;color:#8a8a8e;font:12px var(--font-sans,sans-serif);cursor:pointer;text-decoration:underline;padding:2px}",
+".vtm-vm{max-width:340px;margin:0 auto;background:#0f0f10;border-radius:20px;padding:16px;border:1px solid #2a2a2c;color:#f2f2f4;font-family:var(--font-sans,sans-serif)}",
+".vtm-vm .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.vtm-vm .nm{font-size:16px;font-weight:600}.vtm-vm .tm{font-size:12px;color:#8a8a8e}",
+".vtm-vm .pl{display:flex;align-items:center;gap:10px;margin:12px 0}",
+".vtm-vm .pb{flex:none;width:30px;height:30px;border-radius:50%;background:#2f8f4e;display:flex;align-items:center;justify-content:center}",
+".vtm-vm .tr{flex:1;height:4px;background:#3a3a3e;border-radius:2px;overflow:hidden}.vtm-vm .tr i{display:block;height:100%;width:0;background:#f2f2f4;animation:vtm-vm 6s linear .4s forwards}",
+"@keyframes vtm-vm{to{width:100%}}",
+".vtm-vm .du{font-size:12px;color:#8a8a8e;font-variant-numeric:tabular-nums}",
+".vtm-vm .lb{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8a8a8e;margin-bottom:4px}",
+".vtm-vm .tx{font-size:15px;line-height:1.5;color:#e4e4e8;white-space:pre-wrap;overflow-wrap:anywhere}",
 ".vtm-ent{display:flex;align-items:center;gap:14px;background:var(--surface-2);border:0.5px solid var(--border);border-left:3px solid var(--vtm-brass);border-radius:0;padding:12px 16px;margin:0 0 12px;opacity:0;transform:translateX(-24px);animation:vtm-slide .8s cubic-bezier(.2,.7,.2,1) forwards}",
 ".vtm-ent.threat{border-left-color:var(--vtm-blood)}.vtm-ent.unknown{border-left-color:var(--text-muted)}",
 ".vtm-ent .se{flex:none;width:52px;height:52px;border-radius:50%;border:1.5px solid var(--vtm-brass);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:600;font-size:18px;color:var(--vtm-brass)}",
@@ -217,9 +247,29 @@ window.VTMDaysleep=function(d,mount){
   if(typeof sendPrompt==='function')sendPrompt(msg);});
 };
 
+var LICON={text:'<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.4 1.3 4.6 3.5 6L4.6 21l4.3-2.4c1 .3 2 .4 3.1.4 5.5 0 10-3.6 10-8s-4.5-8-10-8z"/></svg>',
+ missed:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/><path d="m15 3 6 6M21 3l-6 6"/></svg>',
+ voicemail:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><path d="M6 16h12"/></svg>',
+ alert:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>'};
+var LAPP={text:'Messages',missed:'Phone',voicemail:'Voicemail',alert:'Alert'};
+function lockScreen(d){
+ var ns=d.notifications||[];
+ var html='<div class="vtm-lock">'+(d.wallpaper===false?'':'<svg class="wp" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6c6 10 22 17 22 30a10 10 0 0 1-17 7c1 5 3 9 7 13H20c4-4 6-8 7-13a10 10 0 0 1-17-7C10 23 26 16 32 6Z" fill="currentColor"/></svg>')+
+  '<div class="top"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>'+esc(d.owner?d.owner+'’s phone':'Locked')+'</div>'+
+  '<div class="clk">'+esc(d.time||'')+'</div><div class="dt">'+esc(d.date||'')+'</div><div class="ns">';
+ if(!ns.length)html+='<div class="em">No new notifications</div>';
+ ns.forEach(function(n,i){var k=LICON[n.kind]?n.kind:'alert',title=k==='missed'?(n.from||'Unknown')+(n.count>1?' ('+n.count+')':''):k==='alert'?(n.title||''):(n.from||'Unknown');
+  var body=k==='missed'?'Missed call':k==='voicemail'?(n.text?'“'+n.text+'”':'New voicemail'+(n.duration?' · '+n.duration:'')):(n.text||'');
+  html+='<button type="button" class="nf" data-i="'+i+'" style="animation-delay:'+(0.25+i*0.35).toFixed(2)+'s"><span class="ic '+k+'">'+LICON[k]+'</span><span class="bd"><span class="hd"><span class="ap">'+esc(n.app||LAPP[k])+'</span><span>'+esc(n.time||'')+'</span></span>'+(title?'<span class="ti" style="display:block">'+esc(title)+'</span>':'')+'<span class="tx">'+esc(body)+'</span>'+(k==='text'&&n.count>1?'<span class="ct" style="display:block">'+(n.count-1)+' more from '+esc(n.from||'them')+'</span>':'')+'</span></button>';});
+ html+='</div><div class="ft"><button type="button" class="aw">Put the phone away</button><span class="bar" aria-hidden="true"></span></div></div>';
+ return html;
+}
+function voicemail(d){
+ return '<div class="vtm-vm"><div class="hd"><span class="nm">'+esc(d.from||'Unknown')+'</span><span class="tm">'+esc(d.time||'')+'</span></div><div class="pl"><span class="pb" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M7 4v16l13-8z"/></svg></span><span class="tr"><i></i></span><span class="du">'+esc(d.duration||'')+'</span></div><div class="lb">Transcript</div><div class="tx">'+esc(d.transcript||d.body||'')+'</div></div>';
+}
 window.VTMDoc=function(d,mount){
  setup();mount=mountOf(mount);d=d||{};
- var f={text:textThread,letter:letter,note:letter,memo:memo,dossier:dossier,news:news,summons:summons}[d.type]||letter;
+ var f={lock:lockScreen,voicemail:voicemail,text:textThread,letter:letter,note:letter,memo:memo,dossier:dossier,news:news,summons:summons}[d.type]||letter;
  if(d.type==='note'&&!d.hand)d.hand='rushed';
  mount.innerHTML=sr('Document: '+(d.type||'letter'))+'<div class="vtm-wrap">'+f(d)+'</div>';
  var ph=mount.querySelector('.vtm-phone');
@@ -234,6 +284,11 @@ window.VTMDoc=function(d,mount){
   sd.onclick=send;ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
   aw.onclick=function(){if(done)return;done=true;ta.disabled=true;sd.disabled=true;aw.textContent='Phone put away';post('[Put the phone away] Anika ends the conversation with '+who+'.');};
  }
+ var lk=mount.querySelector('.vtm-lock');
+ if(lk){var post2=window.sendPrompt||function(){},nsx=d.notifications||[],away=false;
+  [].forEach.call(lk.querySelectorAll('.nf'),function(b){b.addEventListener('click',function(){if(away||b.classList.contains('done'))return;var n=nsx[+b.getAttribute('data-i')]||{},w=n.from||'Unknown';b.classList.add('done');
+   post2(n.kind==='text'?'[Open texts from '+w+']':n.kind==='missed'?'[Call back '+w+']':n.kind==='voicemail'?'[Play voicemail from '+w+']':'[Open alert] '+(n.app||'Alert')+(n.title?': '+n.title:'')+(n.text?' — '+n.text:''));});});
+  lk.querySelector('.aw').addEventListener('click',function(){if(away)return;away=true;this.textContent='Phone put away';post2('[Put the phone away] Anika locks the phone without opening anything else.');});}
  var w=mount.querySelector('.vtm-wax');
  if(w)w.onclick=function(){var L=mount.querySelector('.vtm-letter');L.classList.remove('sealed');L.classList.add('open');var h=mount.querySelector('.vtm-hint');if(h)h.textContent='';};
 };
