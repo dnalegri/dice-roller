@@ -431,7 +431,6 @@ window.VTMTitle=function(o,mount){
   var draw=function(){sb.classList.toggle('on',on);sb.innerHTML=(on?'Music on':started?'Music off':'Tap for music');};
   var play=function(){loadAmb(function(){if(window.VTMAmbience&&VTMAmbience.play(o.ambience)){on=true;started=true;draw();}});};
   sb.addEventListener('click',function(e){e.stopPropagation();if(on){VTMAmbience.stop();on=false;draw();}else play();});
-  root.addEventListener('click',function(){if(!started&&S.sound!==false)play();});
   setInterval(function(){if(on&&window.VTMAmbience&&VTMAmbience.playing()!==o.ambience){on=false;draw();}},1500);
   loadAmb();draw();}
  showMenu();
