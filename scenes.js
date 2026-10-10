@@ -144,6 +144,7 @@ var CSS=[
 ".vtm-mail .it{border:none!important;border-bottom:1px solid #eeeef0!important;box-shadow:none!important;border-radius:0!important;height:auto!important}",
 ".vtm-mail .it:hover{background:#f1f1f4!important}",
 ".vtm-mail .it.on{background:#0a63d8!important}.vtm-mail .it.on,.vtm-mail .it.on .fr,.vtm-mail .it.on .sb{color:#fff!important}",
+".vtm-lock,.vtm-lock *,.vtm-phone,.vtm-phone *,.vtm-vm,.vtm-vm *,.vtm-mail,.vtm-mail *{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,Helvetica,Arial,sans-serif!important}",
 ".vtm-mail .nb{color:#0a63d8!important;background:transparent!important;border:none!important;box-shadow:none!important;height:auto!important}",
 ".vtm-mail .nb[data-a=close]{color:#a1a1a6!important}",
 ".vtm-mail .bt{color:#1d1d1f!important;background:#fff!important;border:1px solid #d1d1d6!important;box-shadow:none!important;height:auto!important}",
