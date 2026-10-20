@@ -1,0 +1,47 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>dice-roller tests</title>
+<pre id="out"></pre>
+<div id="s1"></div><div id="r1"></div><div id="r2"></div><div id="r3"></div>
+<script src="roller.js"></script>
+<script src="status.js"></script>
+<script>
+var fails=0,lines=[];
+function ok(cond,name){lines.push((cond?'PASS ':'FAIL ')+name);if(!cond)fails++;}
+function done(){document.getElementById('out').textContent=lines.join('\n');document.title=fails?'FAIL '+fails:'PASS '+lines.length;}
+var E=VTMCheck._eval,sk={type:'skill',diff:2},D=function(a){return a.map(function(v){return typeof v==='number'?{v:v,h:false}:{v:v[0],h:true};});};
+
+// evalDice: the V5 result rules
+ok(E(sk,D([6,7,2])).res==='win'&&E(sk,D([6,7,2])).tier==='barely','2 successes vs diff 2 is a barely win');
+ok(E(sk,D([10,10,3])).res==='crit'&&E(sk,D([10,10,3])).tot===4,'pair of 10s is a critical worth 4');
+ok(E(sk,D([10,[10],3])).res==='messy','a Hunger 10 in the pair is a messy critical');
+ok(E(sk,D([3,[1],2])).res==='bestial','failure with a Hunger 1 is a bestial failure');
+ok(E(sk,D([3,4,2])).res==='total','zero successes is a total failure');
+ok(E({type:'skill',diff:3},D([6,2,[7]])).res==='fail','2 successes vs diff 3 fails');
+ok(E({type:'rouse'},D([5])).res==='fail'&&E({type:'rouse'},D([6])).res==='win','rouse passes on 6+');
+ok(E({type:'remorse'},D([2,9])).res==='win','remorse passes on any 6+');
+
+// status strip with no change field, then a roller on the same page (shared ids)
+var st={scene:'Test',hunger:2,wpMax:5,wpSup:0,wpAgg:0,hpMax:7,hpSup:0,hpAgg:0,humanity:7,stains:0,dice:true};
+try{VTMStatus(st,document.getElementById('s1'));ok(true,'status strip renders without change');}catch(e){ok(false,'status strip renders without change: '+e.message);}
+var S={hunger:3,wpMax:5,wpDamage:0,humanity:7,stains:0};
+VTMCheck({type:'skill',title:'T',scene:'S',diff:2,a:['Wits',3],s:['Awareness',2],spec:'<i>knives</i>'},S,document.getElementById('r1'));
+var r1=document.getElementById('r1');
+ok(r1.querySelectorAll('#meter svg').length===5,'roller draws its own Hunger meter');
+ok(document.getElementById('s1').querySelectorAll('#meter svg').length===5,'status strip meter untouched');
+ok(r1.querySelector('#chips').textContent.indexOf('<i>knives</i>')>=0,'specialty text is escaped');
+r1.querySelector('#rollBtn').click();
+ok(r1.querySelectorAll('.die.h').length===3,'skill roll uses Hunger dice');
+
+// frenzy: no Hunger dice
+VTMCheck({type:'frenzy',title:'F',scene:'S',diff:3},S,document.getElementById('r2'));
+var r2=document.getElementById('r2');r2.querySelector('#rollBtn').click();
+ok(r2.querySelectorAll('.die').length>0&&r2.querySelectorAll('.die.h').length===0,'frenzy roll has no Hunger dice');
+
+// failed Rouse at Hunger 5 asks for a hunger frenzy test
+var rnd=Math.random;Math.random=function(){return 0;};
+VTMCheck({type:'rouse',title:'R',scene:'S'},{hunger:5,wpMax:5,wpDamage:0,humanity:7,stains:0},document.getElementById('r3'));
+Math.random=rnd;
+document.getElementById('r3').querySelector('#rollBtn').click();
+setTimeout(function(){var b=document.getElementById('r3').querySelector('#ban');ok(!!b&&b.textContent.indexOf('Hunger frenzy')>=0,'failed Rouse at Hunger 5 shows Hunger frenzy');done();},3000);
+</script>

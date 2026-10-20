@@ -109,12 +109,12 @@ var CSS=[
 ".vtm-mail .tb{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#ececee;border-bottom:1px solid #d9d9dd}",
 ".vtm-mail .dots{display:flex;gap:6px}.vtm-mail .dots i{width:10px;height:10px;border-radius:50%;background:#ff5f57}.vtm-mail .dots i+i{background:#febc2e}.vtm-mail .dots i+i+i{background:#28c840}",
 ".vtm-mail .tt{flex:1;text-align:center;font-size:12px;color:#6e6e73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
-".vtm-mail .nb{all:unset;cursor:pointer;font-size:12px;font-weight:600;color:#0a63d8;padding:3px 8px;border-radius:5px}.vtm-mail .nb:hover{background:#dfe8f6}",
+".vtm-mail .nb{all:unset;cursor:pointer;font-size:12px;font-weight:600;padding:3px 8px;border-radius:5px}",
 ".vtm-mail .bd{display:grid;grid-template-columns:minmax(0,230px) minmax(0,1fr);flex:1;min-height:0}",
 ".vtm-mail .ls{border-right:1px solid #e3e3e6;overflow-y:auto;max-height:440px}",
 ".vtm-mail .fh{padding:10px 12px 6px;font-size:12px;font-weight:600;color:#6e6e73;display:flex;justify-content:space-between}",
-".vtm-mail .it{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;padding:9px 12px 10px 20px;border-bottom:1px solid #eeeef0;position:relative}",
-".vtm-mail .it:hover{background:#f1f1f4}.vtm-mail .it.on{background:#0a63d8;color:#fff}.vtm-mail .it:focus-visible{outline:2px solid #0a63d8;outline-offset:-2px}",
+".vtm-mail .it{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;padding:9px 12px 10px 20px;position:relative}",
+".vtm-mail .it:focus-visible{outline:2px solid #0a63d8;outline-offset:-2px}",
 ".vtm-mail .it .u{position:absolute;left:7px;top:15px;width:7px;height:7px;border-radius:50%;background:#0a63d8}.vtm-mail .it.on .u{background:#fff}",
 ".vtm-mail .it .r1{display:flex;justify-content:space-between;gap:6px}.vtm-mail .it .fr{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vtm-mail .it .tm{font-size:12px;color:#8e8e93;flex:none}.vtm-mail .it.on .tm{color:#dfe8f6}",
 ".vtm-mail .it .sb{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vtm-mail .it.rd .fr,.vtm-mail .it.rd .sb{font-weight:400}",
@@ -129,12 +129,11 @@ var CSS=[
 ".vtm-mail .tx{line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}",
 ".vtm-mail .at{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.vtm-mail .at span{font-size:12px;border:1px solid #d9d9dd;border-radius:6px;padding:5px 9px;background:#f4f4f6}",
 ".vtm-mail .ac{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}",
-".vtm-mail .bt{all:unset;cursor:pointer;font-size:13px;padding:6px 12px;border-radius:6px;border:1px solid #d1d1d6;background:#fff;color:#1d1d1f}.vtm-mail .bt:hover{background:#f1f1f4}.vtm-mail .bt.p{background:#0a63d8;border-color:#0a63d8;color:#fff}.vtm-mail .bt.p:hover{background:#0857c0}",
+".vtm-mail .bt{all:unset;cursor:pointer;font-size:13px;padding:6px 12px;border-radius:6px}",
 ".vtm-mail .bt:focus-visible,.vtm-mail .nb:focus-visible{outline:2px solid #0a63d8;outline-offset:2px}",
 ".vtm-mail .fm{display:flex;flex-direction:column;gap:8px}.vtm-mail .fm label{display:flex;align-items:center;gap:8px;border-bottom:1px solid #e3e3e6;padding:4px 0;font-size:13px;color:#6e6e73}",
-".vtm-mail .fm input{flex:1;border:none;outline:none;background:transparent;font-size:14px;font-family:inherit;color:#1d1d1f;height:auto;padding:4px 0;min-width:0}",
-".vtm-mail .fm textarea{border:1px solid #e3e3e6;border-radius:6px;min-height:140px;resize:vertical;font-size:14px;line-height:1.5;font-family:inherit;color:#1d1d1f;background:#fff;padding:8px 10px;outline:none}",
-".vtm-mail .fm textarea:focus{border-color:#0a63d8}",
+".vtm-mail .fm input{flex:1;outline:none;font-size:14px;font-family:inherit;height:auto;padding:4px 0;min-width:0}",
+".vtm-mail .fm textarea{border-radius:6px;min-height:140px;resize:vertical;font-size:14px;line-height:1.5;font-family:inherit;padding:8px 10px;outline:none}",
 ".vtm-mail .er{font-size:12px;color:#d70015;min-height:16px}",
 ".vtm-mail .ok{font-size:13px;color:#248a3d}",
 ".vtm-mail .qt{margin-top:10px;padding-left:10px;border-left:2px solid #d1d1d6;color:#6e6e73;font-size:13px;white-space:pre-wrap;max-height:120px;overflow:hidden}",
@@ -299,14 +298,14 @@ window.VTMScene=function(sc,mount){
  var eb=[sc.session,sc.scene].filter(Boolean).join(' · ');
  var wh=[sc.place,sc.time].filter(Boolean).join(' · ');
  mount.innerHTML=sr('Scene: '+(sc.title||''))+'<div class="vtm-wrap"><div class="vtm-sc">'+(eb?'<div class="eb">'+esc(eb)+'</div>':'')+'<div class="ti">'+esc(sc.title)+'</div>'+(wh?'<div class="wh">'+esc(wh)+'</div>':'')+'<div class="ru"></div>'+(sc.mood?'<p class="mo">'+esc(sc.mood)+'</p>':'')+(AMB[sc.ambience]?'<button type="button" class="am"></button>':'')+'<div class="st"><div class="vtm-st"></div></div></div></div>';
- if(sc.status&&window.VTMStatus){var st={};for(var k in sc.status)st[k]=sc.status[k];if(!st.change)st.change={trait:'',note:''};try{window.VTMStatus(st,mount.querySelector('.vtm-st'));}catch(e){mount.querySelector('.st').style.display='none';}}
+ if(sc.status&&window.VTMStatus){try{window.VTMStatus(sc.status,mount.querySelector('.vtm-st'));}catch(e){mount.querySelector('.st').style.display='none';}}
  if(AMB[sc.ambience]){var card=mount.querySelector('.vtm-sc'),btn=mount.querySelector('.am'),nm=AMB[sc.ambience],on=false,started=false;card.classList.add('amb');
   var SPK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/>',WAV='<path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',MUT='<path d="m16 9 5 6"/><path d="m21 9-5 6"/></svg>';
   function draw(){btn.classList.toggle('on',on);btn.innerHTML=(on?SPK+WAV:SPK+MUT)+'<span>'+(on?nm+' \u00b7 tap to mute':started?nm+' \u00b7 muted, tap to resume':'Tap the card for ambience \u00b7 '+nm)+'</span>';btn.setAttribute('aria-label',on?'Mute ambience':'Play ambience');}
   function play(){loadAmb(function(){if(window.VTMAmbience&&VTMAmbience.play(sc.ambience)){on=true;started=true;draw();}});}
   function mute(){if(window.VTMAmbience)VTMAmbience.stop();on=false;draw();}
   card.addEventListener('click',function(e){if(btn.contains(e.target)){on?mute():play();return;}if(!started)play();});
-  setInterval(function(){if(on&&window.VTMAmbience&&VTMAmbience.playing()!==sc.ambience){on=false;draw();}},1500);
+  var tk=setInterval(function(){if(!btn.isConnected){clearInterval(tk);return;}if(on&&window.VTMAmbience&&VTMAmbience.playing()!==sc.ambience){on=false;draw();}},1500);
   loadAmb();draw();}
 };
 
@@ -439,7 +438,7 @@ window.VTMTitle=function(o,mount){
   var draw=function(){sb.classList.toggle('on',on);sb.innerHTML=(on?'Music on':started?'Music off':'Tap for music');};
   var play=function(){loadAmb(function(){if(window.VTMAmbience&&VTMAmbience.play(o.ambience)){on=true;started=true;draw();}});};
   sb.addEventListener('click',function(e){e.stopPropagation();if(on){VTMAmbience.stop();on=false;draw();}else play();});
-  setInterval(function(){if(on&&window.VTMAmbience&&VTMAmbience.playing()!==o.ambience){on=false;draw();}},1500);
+  var tk=setInterval(function(){if(!sb.isConnected){clearInterval(tk);return;}if(on&&window.VTMAmbience&&VTMAmbience.playing()!==o.ambience){on=false;draw();}},1500);
   loadAmb();draw();}
  showMenu();
 };
