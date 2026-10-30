@@ -45,3 +45,48 @@ Math.random=rnd;
 document.getElementById('r3').querySelector('#rollBtn').click();
 setTimeout(function(){var b=document.getElementById('r3').querySelector('#ban');ok(!!b&&b.textContent.indexOf('Hunger frenzy')>=0,'failed Rouse at Hunger 5 shows Hunger frenzy');done();},3000);
 </script>
+
+<h3>Music</h3>
+<p>The music checks play sound, so they need a click: <button id="musicBtn">Run music test</button></p>
+<pre id="music"></pre>
+<div id="sc" hidden></div>
+<script src="scenes.js"></script>
+<script src="ambience.js"></script>
+<script>
+(function(){
+var mfails=0,mlines=[],made=[],RealAudio=window.Audio;
+window.Audio=function(){var a=new RealAudio();made.push(a);return a;};
+function mok(cond,name){mlines.push((cond?'PASS ':'FAIL ')+name);if(!cond)mfails++;}
+function show(){document.getElementById('music').textContent=mlines.join('\n');}
+var wait=function(ms){return new Promise(function(r){setTimeout(r,ms);});};
+var SCENES=['casino','haven','velvet','desert','sewers','elysium'];
+
+// every scene name gets a music button, and every track file is there
+mok(['casino','haven','velvet','lounge','desert','sewers','elysium'].every(function(n){return VTMAmbience.names.indexOf(n)>=0;}),'ambience.js knows every scene name, including the lounge alias');
+mok(VTMAmbience.names.every(function(n){VTMScene({title:'t',ambience:n},document.getElementById('sc'));return !!document.querySelector('#sc .am');}),'scenes.js shows a music button for every name ambience.js routes');
+mok(VTMAmbience.play('nope')===false,'an unknown name plays nothing');
+Promise.all([].concat.apply([],SCENES.map(function(s){return [1,2,3].map(function(i){return fetch('audio/'+s+'-'+i+'.mp3',{method:'HEAD'}).then(function(r){return r.ok;});});})))
+ .then(function(r){mok(r.length===18&&r.every(Boolean),'all 18 track files load');show();});
+
+document.getElementById('musicBtn').onclick=async function(){
+ mok(VTMAmbience.play('lounge')===true&&VTMAmbience.playing()==='lounge','lounge plays (through haven)');
+ await wait(4000);
+ var on=made.filter(function(x){return !x.paused;}),a=on[0];
+ mok(made.length===2&&on.length===1&&a.currentTime>0.5,'two players are set up and one haven track is playing');
+ var row=VTMAmbience.tracks.haven.filter(function(t){return a.src.indexOf(t[0])>=0;})[0];
+ mok(!!row&&a.currentTime>=row[1]&&a.currentTime<row[1]+6,'it starts where the music starts ('+(row&&row[0])+' at '+(row&&row[1])+' s)');
+ var aSrc=a.src.split('#')[0];a.currentTime=a.duration-5;await wait(6000);
+ var b=made.filter(function(x){return x!==a;})[0];
+ mok(!b.paused&&/haven-\d\.mp3/.test(b.src)&&b.src.split('#')[0]!==aSrc,'it crossfades to a different track on the other player');
+ mok(a.paused&&!a.getAttribute('src'),'the finished track is released');
+ mok(made.length===2,'the rotation reuses the same two players (Safari needs this)');
+ VTMAmbience.stop();await wait(2500);
+ mok(!VTMAmbience.playing()&&made.every(function(x){return x.paused;}),'stop fades out and stops everything');
+ VTMScene({title:'t',ambience:'velvet'},document.getElementById('sc'));
+ document.querySelector('#sc .am').click();await wait(3000);
+ mok(VTMAmbience.playing()==='velvet'&&made.some(function(x){return !x.paused&&/velvet-\d\.mp3/.test(x.src);}),'the scene card music button plays the Velvet Room');
+ VTMAmbience.stop();await wait(2000);
+ document.title=mfails?'MUSIC FAIL '+mfails:'MUSIC PASS '+mlines.length;show();
+};
+})();
+</script>

@@ -11,4 +11,6 @@ https://cdn.jsdelivr.net/gh/dnalegri/dice-roller@main/ambience.js defines VTMAmb
 
 Each function renders into `mount`, or the element with id vtm.
 
-Tests: open test.html in a browser.
+Scene music: pass `ambience` to VTMScene or VTMTitle as one of casino, haven, velvet, desert, sewers or elysium (lounge still works and plays haven). Each name plays a shuffled rotation of the tracks in `audio/`; the routing table is at the top of ambience.js. Tracks were generated with ElevenLabs Music on a paid plan.
+
+Tests: serve the repo over HTTP with range requests (jsDelivr has them) and open test.html. The music checks need a click on "Run music test".

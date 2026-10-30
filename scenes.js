@@ -8,7 +8,10 @@
    Every function renders into `mount`, or the element with id "vtm". All text is escaped. */
 (function(){
 var BASE=((document.currentScript&&document.currentScript.src)||'').replace(/scenes\.js.*$/,'');
-var AMB={casino:'Casino floor',lounge:'The lounge',desert:'Desert night',sewers:'The sewers',elysium:'Elysium'};
+/* Music names and button labels. Must match the routing table in ambience.js. */
+var AMB={casino:'Casino floor',haven:'The haven',velvet:'The Velvet Room',lounge:'The haven',desert:'Desert night',sewers:'The sewers',elysium:'Elysium'};
+/* Same as kit() in ambience.js. Built inside the tap so Safari lets the music play, even when ambience.js is still loading. */
+function unlockAudio(){if(window.VTMAudioKit)return;try{var C=window.AudioContext||window.webkitAudioContext,k={ctx:new C(),els:[new Audio(),new Audio()]};k.els.forEach(function(el){el.crossOrigin='anonymous';el.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';el.play().catch(function(){});});window.VTMAudioKit=k;}catch(e){}}
 function loadAmb(cb){if(window.VTMAmbience){cb&&cb();return;}if(!BASE)return;var s=document.createElement('script');s.src=BASE+'ambience.js';s.onload=function(){cb&&cb();};document.head.appendChild(s);}
 var FONTS="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=IM+Fell+English:ital@0;1&family=Special+Elite&family=Playfair+Display:wght@700;900&family=Mrs+Saint+Delafield&family=La+Belle+Aurore&family=Petit+Formal+Script&family=Homemade+Apple&family=Poiret+One&family=Castoro+Titling&family=Alegreya:ital,wght@0,400;0,500;1,400&display=swap";
 var CSS=[
@@ -302,7 +305,7 @@ window.VTMScene=function(sc,mount){
  if(AMB[sc.ambience]){var card=mount.querySelector('.vtm-sc'),btn=mount.querySelector('.am'),nm=AMB[sc.ambience],on=false,started=false;card.classList.add('amb');
   var SPK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/>',WAV='<path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',MUT='<path d="m16 9 5 6"/><path d="m21 9-5 6"/></svg>';
   function draw(){btn.classList.toggle('on',on);btn.innerHTML=(on?SPK+WAV:SPK+MUT)+'<span>'+(on?nm+' \u00b7 tap to mute':started?nm+' \u00b7 muted, tap to resume':'Tap the card for ambience \u00b7 '+nm)+'</span>';btn.setAttribute('aria-label',on?'Mute ambience':'Play ambience');}
-  function play(){loadAmb(function(){if(window.VTMAmbience&&VTMAmbience.play(sc.ambience)){on=true;started=true;draw();}});}
+  function play(){unlockAudio();loadAmb(function(){if(window.VTMAmbience&&VTMAmbience.play(sc.ambience)){on=true;started=true;draw();}});}
   function mute(){if(window.VTMAmbience)VTMAmbience.stop();on=false;draw();}
   card.addEventListener('click',function(e){if(btn.contains(e.target)){on?mute():play();return;}if(!started)play();});
   var tk=setInterval(function(){if(!btn.isConnected){clearInterval(tk);return;}if(on&&window.VTMAmbience&&VTMAmbience.playing()!==sc.ambience){on=false;draw();}},1500);
@@ -436,7 +439,7 @@ window.VTMTitle=function(o,mount){
  });
  if(amb){var sb=root.querySelector('.snd'),on=false,started=false;
   var draw=function(){sb.classList.toggle('on',on);sb.innerHTML=(on?'Music on':started?'Music off':'Tap for music');};
-  var play=function(){loadAmb(function(){if(window.VTMAmbience&&VTMAmbience.play(o.ambience)){on=true;started=true;draw();}});};
+  var play=function(){unlockAudio();loadAmb(function(){if(window.VTMAmbience&&VTMAmbience.play(o.ambience)){on=true;started=true;draw();}});};
   sb.addEventListener('click',function(e){e.stopPropagation();if(on){VTMAmbience.stop();on=false;draw();}else play();});
   var tk=setInterval(function(){if(!sb.isConnected){clearInterval(tk);return;}if(on&&window.VTMAmbience&&VTMAmbience.playing()!==o.ambience){on=false;draw();}},1500);
   loadAmb();draw();}
