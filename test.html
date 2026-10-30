@@ -21,6 +21,15 @@ ok(E({type:'skill',diff:3},D([6,2,[7]])).res==='fail','2 successes vs diff 3 fai
 ok(E({type:'rouse'},D([5])).res==='fail'&&E({type:'rouse'},D([6])).res==='win','rouse passes on 6+');
 ok(E({type:'remorse'},D([2,9])).res==='win','remorse passes on any 6+');
 
+// Masquerade track and city heat (optional fields)
+document.body.insertAdjacentHTML('beforeend','<div id="s2"></div><div id="s3"></div>');
+VTMStatus({scene:'T',hunger:1,wpMax:5,wpSup:0,wpAgg:0,hpMax:6,hpSup:0,hpAgg:0,humanity:6,stains:0,dice:true,masq:{sup:1,agg:1},heat:2,change:{trait:'masq',note:'x'}},document.getElementById('s2'));
+var s2=document.getElementById('s2');
+ok(s2.querySelectorAll('#masq .bx').length===5&&s2.querySelectorAll('#masq .bx.agg').length===1&&s2.querySelector('#masq').textContent.indexOf('/')>=0,'masquerade track shows 1 superficial and 1 aggravated');
+ok(s2.querySelectorAll('.heat .hp.on').length===2&&s2.querySelector('.hw').textContent==='Suspicious','city heat 2 reads Suspicious');
+ok(s2.querySelector('#st-masq').classList.contains('changed'),'masquerade change flashes');
+VTMStatus({scene:'T',hunger:1,wpMax:5,wpSup:0,wpAgg:0,hpMax:6,hpSup:0,hpAgg:0,humanity:6,stains:0,dice:true,masq:{sup:0,agg:5}},document.getElementById('s3'));
+ok(document.getElementById('s3').querySelector('.mq').textContent==='Burned','full aggravated track reads Burned');
 // status strip with no change field, then a roller on the same page (shared ids)
 var st={scene:'Test',hunger:2,wpMax:5,wpSup:0,wpAgg:0,hpMax:7,hpSup:0,hpAgg:0,humanity:7,stains:0,dice:true};
 try{VTMStatus(st,document.getElementById('s1'));ok(true,'status strip renders without change');}catch(e){ok(false,'status strip renders without change: '+e.message);}
